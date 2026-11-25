@@ -12,7 +12,15 @@ test('loads the message encryption key from the environment', () => {
     encryptionKey: key,
     aiCircuitResetTimeoutMs: 30_000,
     mockAiFailureCount: 0,
+    auditLogPath: 'data/audit-log.json',
   });
+});
+
+test('supports a custom audit file path and rejects invalid paths', () => {
+  const env = { MESSAGE_ENCRYPTION_KEY: randomBytes(32).toString('base64') };
+
+  assert.equal(readConfig({ ...env, AUDIT_LOG_PATH: 'local/audit.json' }).auditLogPath, 'local/audit.json');
+  assert.throws(() => readConfig({ ...env, AUDIT_LOG_PATH: ' ' }), /AUDIT_LOG_PATH/);
 });
 
 test('loads AI settings from the environment and rejects invalid settings', () => {

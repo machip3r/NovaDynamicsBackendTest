@@ -28,5 +28,10 @@ export function readConfig(env: NodeJS.ProcessEnv) {
     throw new Error('MOCK_AI_FAILURE_COUNT must be a nonnegative integer.');
   }
 
-  return { port, encryptionKey, aiCircuitResetTimeoutMs, mockAiFailureCount };
+  const auditLogPath = env.AUDIT_LOG_PATH ?? 'data/audit-log.json';
+  if (auditLogPath.trim() === '' || auditLogPath.includes('\0')) {
+    throw new Error('AUDIT_LOG_PATH must be a valid file path.');
+  }
+
+  return { port, encryptionKey, aiCircuitResetTimeoutMs, mockAiFailureCount, auditLogPath };
 }

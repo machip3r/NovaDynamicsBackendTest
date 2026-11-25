@@ -1,26 +1,24 @@
 import type { RequestHandler } from 'express';
 import { errorResponse, successResponse } from '../http/api-response.ts';
+import type { InquiryResult } from '../repositories/audit.repository.ts';
 import type { SecureInquiry } from '../schemas/secure-inquiry.schema.ts';
-import { CircuitOpenError } from '../services/circuit-breaker.service.ts';
 
 export function createSecureInquiryController(
-  generateAnswer: (message: string) => Promise<string>,
+  processInquiry: (inquiry: SecureInquiry) => Promise<InquiryResult>,
 ): RequestHandler {
   return async (request, response) => {
-    const { message }: SecureInquiry = request.body;
+    const result = await processInquiry(request.body);
 
-    try {
-      await generateAnswer(message);
-    } catch (error) {
-      if (error instanceof CircuitOpenError) {
+    switch (result) {
+      case 'service_busy':
         response.status(503).json(errorResponse('Service Busy'));
-        return;
-      }
-
-      response.status(502).json(errorResponse('AI request failed.'));
-      return;
+        break;
+      case 'failure':
+        response.status(502).json(errorResponse('AI request failed.'));
+        break;
+      case 'success':
+        response.status(200).json(successResponse());
+        break;
     }
-
-    response.status(200).json(successResponse());
   };
 }
