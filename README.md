@@ -23,7 +23,12 @@ Send `Content-Type: application/json` with a JSON object containing `userId` and
 }
 ```
 
-A successful request returns HTTP `200` with an empty body. Invalid input returns HTTP `400` with the affected fields when available. An attempted AI call that fails returns HTTP `502` with `{"error":"AI request failed."}`. While the breaker blocks calls, the endpoint immediately returns HTTP `503` with `{"error":"Service Busy"}`.
+API responses use the JSON shape `{ data, success, error }`. `data` can be an object or an array of objects. `error` is `null` on success or a message string on failure.
+
+- A successful inquiry returns HTTP `200` with `{"data":{},"success":true,"error":null}`.
+- Invalid input returns HTTP `400`. Field validation details are available in `data.issues`.
+- An attempted AI call that fails returns HTTP `502` with `"AI request failed."` in `error`.
+- While the breaker blocks calls, the endpoint immediately returns HTTP `503` with `"Service Busy"` in `error`.
 
 The application factory in `src/app.ts` wires the router to an injectable controller. `src/server.ts` creates one AI service and one shared circuit breaker before starting the listener. Routes compose parsing and validation middleware with schemas from `src/schemas`. Business logic lives in `src/services`, and `src/repositories` is reserved for persistence.
 
