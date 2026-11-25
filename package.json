@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "node --watch src/server.ts",
+    "test": "node --test test/*.test.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
     "start": "node dist/server.js"
