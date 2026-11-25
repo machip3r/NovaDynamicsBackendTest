@@ -8,6 +8,13 @@ test('redacts emails with tags, subdomains, and punctuation around them', () => 
   assert.equal(sanitizeMessage(message), 'Email <<REDACTED: EMAIL>>, or write to <REDACTED: EMAIL>.');
 });
 
+test('preserves ellipses after email addresses', () => {
+  const message = 'Try help@example.com... or write to <ops@example.org...>';
+
+  assert.equal(sanitizeMessage(message), 'Try <REDACTED: EMAIL>... or write to <<REDACTED: EMAIL>...>');
+  assert.equal(sanitizeMessage('Malformed address: ops@example.org..invalid'), 'Malformed address: ops@example.org..invalid');
+});
+
 test('redacts card candidates with or without separators across the supported lengths', () => {
   const message = '4111111111111111, 4111  1111 1111 1111; 3782-822463-10005; ' +
     '12345678-1234; 1234-5678 9012-3456 789';

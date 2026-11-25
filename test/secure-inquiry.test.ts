@@ -26,8 +26,8 @@ test('sends only sanitized text and audits success, upstream failure, and an ope
     encrypt,
     generateAnswer: (message) => breaker.execute(() => callAi(message)),
   });
-  const message = 'Email test@example.com, card 4111-1111-1111-1111, SSN 123-45-6789.';
-  const sanitizedMessage = 'Email <REDACTED: EMAIL>, card <REDACTED: CREDIT_CARD>, SSN <REDACTED: SSN>.';
+  const message = 'Email test@example.com... Card 4111-1111-1111-1111, SSN 123-45-6789.';
+  const sanitizedMessage = 'Email <REDACTED: EMAIL>... Card <REDACTED: CREDIT_CARD>, SSN <REDACTED: SSN>.';
   const inquiry = { userId: 'user-1', message };
 
   assert.equal(await processInquiry(inquiry), 'success');

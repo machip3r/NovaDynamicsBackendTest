@@ -4,7 +4,8 @@ const SSN = '<REDACTED: SSN>';
 
 // The left boundary prevents retries inside a long local part. Domain labels are
 // bounded and separated by literal dots, so there is one way to split the labels.
-const emailPattern = /(?<![\p{L}\p{M}\p{N}.!#$%&'*+\/=?^_`{|}~@-])([A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]{1,64})@((?:[A-Za-z0-9-]{1,63}\.){1,126}[A-Za-z0-9-]{1,63})(?![\p{L}\p{M}\p{N}_@-]|\.[\p{L}\p{M}\p{N}._-])/gu;
+// Trailing dots are punctuation when no domain characters follow the run.
+const emailPattern = /(?<![\p{L}\p{M}\p{N}.!#$%&'*+\/=?^_`{|}~@-])([A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]{1,64})@((?:[A-Za-z0-9-]{1,63}\.){1,126}[A-Za-z0-9-]{1,63})(?![\p{L}\p{M}\p{N}_@-]|\.+[\p{L}\p{M}\p{N}_-])/gu;
 // Digits and separators are disjoint, so each group boundary is unambiguous.
 const numericChainPattern = /\d+(?:(?: +|-)\d+)*/g;
 const minCardDigits = 12;

@@ -7,7 +7,7 @@ export function createSecureInquiryRouter(handleInquiry: RequestHandler) {
 
   router.post(
     '/secure-inquiry',
-    json({ strict: false }),
+    json({ strict: false, inflate: false }),
     validateBody(secureInquirySchema),
     handleInquiry,
   );

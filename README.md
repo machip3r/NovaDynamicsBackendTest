@@ -51,7 +51,7 @@ The server listens on port `3000` by default. Set `PORT` to override it. Use `pn
 
 ## POST /secure-inquiry
 
-Send `Content-Type: application/json` with a JSON object containing `userId` and `message` as strings.
+Send uncompressed `application/json` with a JSON object containing `userId` and `message` as strings. Compressed request bodies return HTTP `415`.
 
 ```json
 {
