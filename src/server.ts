@@ -18,7 +18,7 @@ const processInquiry = createSecureInquiryService({
 });
 const handleInquiry = createSecureInquiryController(processInquiry);
 
-createApp(handleInquiry).listen(port, (error) => {
+const server = createApp(handleInquiry).listen(port, (error) => {
   if (error) {
     console.error(`Could not start the API on port ${port}.`, error);
     process.exitCode = 1;
@@ -27,3 +27,23 @@ createApp(handleInquiry).listen(port, (error) => {
 
   console.log(`API listening on port ${port}`);
 });
+
+let shuttingDown = false;
+
+function shutdown() {
+  if (shuttingDown) return;
+  shuttingDown = true;
+
+  server.close((error) => {
+    if (error) {
+      console.error('Could not shut down the API cleanly.', error);
+      process.exitCode = 1;
+      return;
+    }
+
+    console.log('API stopped.');
+  });
+}
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

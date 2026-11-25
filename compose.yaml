@@ -1,0 +1,18 @@
+services:
+  api:
+    build: .
+    init: true
+    stop_grace_period: 30s
+    ports:
+      - "${HOST_PORT:-3000}:${PORT:-3000}"
+    environment:
+      PORT: "${PORT:-3000}"
+      MESSAGE_ENCRYPTION_KEY: "${MESSAGE_ENCRYPTION_KEY:?Set MESSAGE_ENCRYPTION_KEY in .env or your shell}"
+      AI_CIRCUIT_RESET_TIMEOUT_MS: "${AI_CIRCUIT_RESET_TIMEOUT_MS:-30000}"
+      MOCK_AI_FAILURE_COUNT: "${MOCK_AI_FAILURE_COUNT:-0}"
+      AUDIT_LOG_PATH: /app/data/audit-log.json
+    volumes:
+      - audit-data:/app/data
+
+volumes:
+  audit-data:

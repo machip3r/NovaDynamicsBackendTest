@@ -1,0 +1,11 @@
+*
+!package.json
+!pnpm-lock.yaml
+!tsconfig.json
+!src/
+!src/**
+**/.env
+**/.env.*
+**/.npmrc
+**/node_modules
+**/*.tsbuildinfo

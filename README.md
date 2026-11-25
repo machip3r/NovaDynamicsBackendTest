@@ -1,6 +1,43 @@
 # Nova Dynamics Backend
 
-Express API scaffold with TypeScript and Zod. It requires Node.js 22.18 or later and pnpm 12.11.2.
+Express API with TypeScript and Zod.
+
+## Docker Compose
+
+Start Docker Desktop or Docker Engine with the Compose plugin. For a new audit database, generate the encryption key into a local `.env` file. If you already have a key for existing records, set `MESSAGE_ENCRYPTION_KEY` to that key in `.env` or your shell.
+
+```sh
+(
+  umask 077
+  set -C
+  key=$(docker run --rm node:24-bookworm-slim node -p 'require("node:crypto").randomBytes(32).toString("base64")') &&
+    printf 'MESSAGE_ENCRYPTION_KEY=%s\n' "$key" > .env
+)
+docker compose build
+docker compose up -d
+```
+
+The setup command preserves an existing `.env`. Compose passes the key when the container starts, and `.env` is excluded from the build. Keep the same key for as long as you need to decrypt records in the volume.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `MESSAGE_ENCRYPTION_KEY` | Required | Padded Base64 value that decodes to 32 bytes |
+| `HOST_PORT` | `3000` | Published port on the host |
+| `PORT` | `3000` | Port the API listens on in the container |
+| `AI_CIRCUIT_RESET_TIMEOUT_MS` | `30000` | Circuit breaker cooldown in milliseconds |
+| `MOCK_AI_FAILURE_COUNT` | `0` | Number of initial mock AI calls to fail |
+
+```sh
+curl --fail-with-body http://localhost:3000/secure-inquiry \
+  -H 'Content-Type: application/json' \
+  -d '{"userId":"user-123","message":"I have a question about my account."}'
+```
+
+The `audit-data` volume stores `/app/data/audit-log.json`. `docker compose down` removes the container and preserves the volume for the next `docker compose up -d`. `docker compose down --volumes` deletes the audit volume. On shutdown, the server stops accepting connections and lets active requests finish within Compose's 30-second grace period.
+
+## Local development
+
+Local development requires Node.js 22.18 or later and pnpm 12.11.2.
 
 ```sh
 pnpm install --frozen-lockfile
