@@ -17,5 +17,16 @@ export function readConfig(env: NodeJS.ProcessEnv) {
     throw new Error(invalidKey);
   }
 
-  return { port, encryptionKey };
+  const aiCircuitResetTimeoutMs = Number(env.AI_CIRCUIT_RESET_TIMEOUT_MS ?? '30000');
+  if (!Number.isSafeInteger(aiCircuitResetTimeoutMs) || aiCircuitResetTimeoutMs < 1) {
+    throw new Error('AI_CIRCUIT_RESET_TIMEOUT_MS must be a positive integer in milliseconds.');
+  }
+
+  const mockAiFailureCountValue = env.MOCK_AI_FAILURE_COUNT ?? '0';
+  const mockAiFailureCount = Number(mockAiFailureCountValue);
+  if (mockAiFailureCountValue.trim() === '' || !Number.isSafeInteger(mockAiFailureCount) || mockAiFailureCount < 0) {
+    throw new Error('MOCK_AI_FAILURE_COUNT must be a nonnegative integer.');
+  }
+
+  return { port, encryptionKey, aiCircuitResetTimeoutMs, mockAiFailureCount };
 }
